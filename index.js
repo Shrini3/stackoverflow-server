@@ -193,6 +193,16 @@ app.get("/myquestions", getUserID, async (req, res) => {
     }
 })
 
+app.get("/api/getallquestions", async(req, res) => {
+    try {
+        const results = await Question.find().limit(20)
+        res.send(results)
+    } catch (error) {
+        console.log(error)
+        res.send({error: "Some error occured!"})
+    }
+})
+
 app.get("/getquestiondata", async(req, res) => {
     try {
         //console.log(req.query)
@@ -400,6 +410,32 @@ app.post("/api/downvote", getCookie, async(req, res) => {
     } catch(err) {
         console.log(err)
         res.send({error: "unable to upvote answer"})
+    }
+})
+
+app.get("/api/search", async(req, res) => {
+    try {
+        const sq = req.query.searchquery
+        if(sq) {
+            if(sq[0] === "[" && sq[sq.length - 1] === "]" && sq.length >= 3) {
+                console.log(sq)
+                const data = await Question.find({tags: sq.slice(1, sq.length - 1)})
+                res.send(data)
+            } else if(sq[0] === ":" && sq.length >= 2) {
+                console.log(sq.slice(1))
+                const data = await Question.find({Title: { $regex: sq.slice(1), $options: 'i'}})
+                res.send(data)
+            } else {
+                res.send({message: "query format incorrect."})
+            }
+            
+            //console.log(sq[sq.length - 1])
+        } else {
+            res.send({message: "query format incorrect."})
+        }
+    } catch (error) {
+        console.error(error)
+        res.send({error: "unable to parse your search query!"})
     }
 })
 
