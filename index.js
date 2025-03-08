@@ -444,7 +444,7 @@ app.get("/api/search", async(req, res) => {
 //const connection_url = process.env.CONN_URL
 const conn_str = "mongodb://localhost:27017/mydb"
 
-mongoose.connect(conn_str, {
+mongoose.connect(process.env.CONN_URL2, {
     useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => app.listen(PORT, ()=> {console.log(`server running on port ${PORT}`)}))
     .catch((err)=> console.log(err.message))
